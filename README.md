@@ -21,5 +21,4 @@ Type [@anytweetbot](https://t.me/anytweetbot) in any chat to start searching.
 
 #### Example:
 
-![example](https://user-images.githubusercontent.com/37377066/110357751-0fc3d580-8055-11eb-9d02-f1fe683fd05d.mp4)
-
+![usage](https://user-images.githubusercontent.com/37377066/110358882-477f4d00-8056-11eb-80ce-b6865222250c.gif)
