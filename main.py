@@ -3,10 +3,13 @@ import os
 
 from telegram.ext import Updater, InlineQueryHandler, CallbackQueryHandler, CommandHandler, ChosenInlineResultHandler
 
-with open(".env", 'r') as f:
-    for line in f:
-        key, value = line.strip().split('=')
-        os.environ[key] = value
+try:
+    with open(".env", 'r') as f:
+        for line in f:
+            key, value = line.strip().split('=')
+            os.environ[key] = value
+except FileNotFoundError:
+    pass
 
 from tg.inline import inline_tweets, edit_msg
 from tg.commands import command_start, command_help
