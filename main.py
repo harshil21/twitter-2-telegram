@@ -42,7 +42,9 @@ def main() -> None:
     dp.add_handler(CommandHandler(command='start', callback=command_start))
     dp.add_handler(CommandHandler(command='help', callback=command_help))
 
-    updater.start_polling()
+    # for heroku-
+    updater.start_webhook(listen="0.0.0.0", port=int(os.environ.get('PORT', 8443)), url_path=token)
+    updater.bot.setWebhook(f"https://tweets-on-telegram-bot.herokuapp.com/{token}")
     updater.idle()
 
 
