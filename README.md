@@ -18,3 +18,8 @@ Type [@anytweetbot](https://t.me/anytweetbot) in any chat to start searching.
 - Twitter's search API (v1.1) doesn't allow searching tweets 7 days after they are posted (in the standard package).
 - Original quoted tweet text is not shown.
 - You tell me.
+
+#### Example:
+
+![example](https://user-images.githubusercontent.com/37377066/110357751-0fc3d580-8055-11eb-9d02-f1fe683fd05d.mp4)
+
