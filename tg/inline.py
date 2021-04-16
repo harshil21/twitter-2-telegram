@@ -1,19 +1,20 @@
 import logging
 from typing import List, Tuple
 
-from telegram import InlineQueryResultArticle as InlineArticle, InputTextMessageContent as InpTxtMsg, Update, \
-    InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultPhoto, InputMediaPhoto as InpMediaPic, \
-    InlineQueryResultVideo
+from telegram import (InlineQueryResultArticle as InlineArticle, InputTextMessageContent as InpTxtMsg,
+                      Update, InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultPhoto,
+                      InlineQueryResultVideo, InputMediaPhoto as InpMediaPic)
 from telegram.ext import CallbackContext
 
 from api.twitter_api import TwitterParser
 
 
 def inline_tweets(update: Update, _: CallbackContext) -> None:
-    """Handle the inline query."""
+    """Handle the inline twitter query."""
     results = []
     query = update.inline_query.query.split()
     parser = TwitterParser()
+    lang = None
 
     if len(query) >= 1 and query[0].startswith('@'):  # User searches for a specific tweet from a specific user
         profile_query = f"{' '.join(query[1:])} from:{query[0][1:]}"
@@ -23,16 +24,25 @@ def inline_tweets(update: Update, _: CallbackContext) -> None:
         profile_query = f'"{joined}" OR {joined} -filter:retweets'  # Get original tweet instead of RT's
 
     else:  # Get trending results
-        trends = parser.get('trends/place.json', payload={'id': 1})
+        trends = parser.get('trends/place.json', payload={'id': 1})  # 1 is worldwide trends.
         profile_query = f"{parser.get_random_trend(trends)} -filter:retweets"
+        lang = 'en'  # Force english for trending results
 
-    payload = {'q': profile_query, 'count': 30, 'result_type': 'mixed', 'lang': 'en'}
+    payload = {'q': profile_query, 'count': 30, 'result_type': 'mixed', 'lang': lang}
 
     tweets = parser.get("search/tweets.json", payload=payload)
+    tweet_id = None
+
     for tweet in tweets['statuses']:
+        if tweet['id'] == tweet_id:  # Sometimes there are duplicate tweets (due to result_type being mixed)
+            continue
+        tweet_id = tweet['id']
         tweet_info = parser.parse_tweet(tweet)
         inline_result = add_inlinequery(tweet_info)
         results.append(inline_result)
+
+    if not results:
+        results.append(InlineArticle('1', 'No result found.', InpTxtMsg("No result found.")))
 
     update.inline_query.answer(results, cache_time=300, auto_pagination=True)
 
@@ -62,6 +72,7 @@ def add_inlinequery(tweet_data: dict):
 
 
 def edit_msg(update: Update, _: CallbackContext):
+    """Edits message to include the next photo."""
     tweet_id, page_op, page = update.callback_query.data.split('_')
     page = int(page)
 
@@ -76,7 +87,7 @@ def edit_msg(update: Update, _: CallbackContext):
                                                                caption_entities=parser.tweet_info['caption_entities']),
                                              reply_markup=InlineKeyboardMarkup(buttons))
     update.callback_query.answer()
-    logging.info(f"{page_op} clicked for {tweet_id} to move to {new_page} from {page}.")
+    logging.info(f"{page_op} clicked for {tweet_id=} to move to {new_page=} from {page=}.")
 
 
 def new_img(page: int, page_op: str, tweet_id: str, max_imgs: int) -> Tuple[int, List[List[InlineKeyboardButton]]]:
@@ -87,12 +98,14 @@ def new_img(page: int, page_op: str, tweet_id: str, max_imgs: int) -> Tuple[int,
     elif page_op == 'prev' and page > 1:
         new_page_no -= 1
 
+    ahead = InlineKeyboardButton(text='Next Photo', callback_data=f'{tweet_id}_next_{new_page_no}')
+    prev = InlineKeyboardButton(text='Prev Photo', callback_data=f'{tweet_id}_prev_{new_page_no}')
+
     if new_page_no == 1:
-        buttons = [[InlineKeyboardButton(text='Next Photo', callback_data=f'{tweet_id}_next_{new_page_no}')]]
+        buttons = [[ahead]]
     elif new_page_no == max_imgs:
-        buttons = [[InlineKeyboardButton(text='Prev Photo', callback_data=f'{tweet_id}_prev_{new_page_no}')]]
+        buttons = [[prev]]
     else:
-        buttons = [[InlineKeyboardButton(text='Prev Photo', callback_data=f'{tweet_id}_prev_{new_page_no}'),
-                    InlineKeyboardButton(text='Next Photo', callback_data=f'{tweet_id}_next_{new_page_no}')]]
+        buttons = [prev, ahead]
 
     return new_page_no, buttons
