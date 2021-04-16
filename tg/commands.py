@@ -27,7 +27,7 @@ def show_logs(update: Update, _: CallbackContext) -> None:
     update.effective_chat.send_action(action='upload_document')  # Send chat action since there is a ~5 second wait
 
     command = 'heroku logs -a tweets-on-telegram-bot -s app -n 300'
-    a = subprocess.Popen(command, shell=True, encoding='utf-8', stdout=subprocess.PIPE, errors='ignore', cwd='/home')
+    a = subprocess.Popen(command, shell=True, encoding='utf-8', stdout=subprocess.PIPE, errors='ignore')
     out, _ = a.communicate()
 
     with open('files/logs.txt', 'w') as log_f:
