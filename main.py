@@ -50,7 +50,6 @@ def main() -> None:
 
     dp.add_error_handler(error_handler)
     # for heroku-
-    print(int(os.environ.get('PORT')))
     updater.start_webhook(listen="0.0.0.0", port=int(os.environ.get('PORT', 8443)), url_path=token,
                           webhook_url=f"https://tweets-on-telegram-bot.herokuapp.com/{token}")
     updater.idle()
@@ -58,13 +57,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     logging.info("Process started...")
-    heroku_pass = os.getenv('heroku_pass')
-    with open('./.netrc', 'w') as f:
-        heroku_creds = "machine api.heroku.com\n" \
-                       "   login ilovebhagwan@gmail.com\n" \
-                       f"   password {heroku_pass}\n" \
-                       "machine git.heroku.com\n" \
-                       "   login ilovebhagwan@gmail.com\n" \
-                       f"   password {heroku_pass}\n"
-        f.write(heroku_creds)
     main()

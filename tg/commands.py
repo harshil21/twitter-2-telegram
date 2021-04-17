@@ -1,5 +1,4 @@
 import logging
-import subprocess
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, MessageEntity
 from telegram.ext import CallbackContext
@@ -22,15 +21,8 @@ def command_help(update: Update, _: CallbackContext) -> None:
     logging.info(f"/help was used by {update.effective_user.name}")
 
 
-def show_logs(update: Update, _: CallbackContext) -> None:
+def show_logs(_: object, context: CallbackContext) -> None:
     """Sends bot logs to the bot maker at his will."""
-    update.effective_chat.send_action(action='upload_document')  # Send chat action since there is a ~5 second wait
-
-    command = 'heroku logs -a tweets-on-telegram-bot -s app -n 300'
-    a = subprocess.Popen(command, shell=True, encoding='utf-8', stdout=subprocess.PIPE, errors='ignore')
-    out, _ = a.communicate()
-
-    with open('files/logs.txt', 'w') as log_f:
-        log_f.write(out)
-    with open("files/logs.txt", 'r') as log_f2:
-        update.effective_chat.send_document(document=log_f2, filename='logs.txt')
+    context.bot.send_chat_action(chat_id=476269395, action='upload_document')
+    with open("files/logs.log", 'r') as log_f2:
+        context.bot.send_document(chat_id=476269395, document=log_f2, filename='logs.txt')
