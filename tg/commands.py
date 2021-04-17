@@ -19,3 +19,10 @@ def command_help(update: Update, _: CallbackContext) -> None:
     entities = [MessageEntity('code', offset=first_code, length=15), MessageEntity('code', second_code, 9)]
     update.effective_chat.send_message(text=help_string, entities=entities)
     logging.info(f"/help was used by {update.effective_user.name}")
+
+
+def show_logs(_: object, context: CallbackContext) -> None:
+    """Sends bot logs to the bot maker at his will."""
+    context.bot.send_chat_action(chat_id=476269395, action='upload_document')
+    with open("files/logs.log", 'r') as log_f2:
+        context.bot.send_document(chat_id=476269395, document=log_f2, filename='logs.txt')
