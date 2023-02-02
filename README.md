@@ -1,6 +1,8 @@
 # twitter-telegram-bot
 An inline telegram bot which fetches and sends tweets from twitter to any chat.
 
+## NOTE: This project is now dead since Twitter is [paywalling access](https://twitter.com/TwitterDev/status/1621026986784337922) to its API, I will continue this if I get sponsors to do it.
+
 Type [@anytweetbot](https://t.me/anytweetbot) in any chat to start searching.
 
 ### Inline mode usage:
