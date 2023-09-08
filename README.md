@@ -23,4 +23,4 @@ Type [@anytweetbot](https://t.me/anytweetbot) in any chat to start searching.
 
 #### Example:
 
-![usage](https://user-images.githubusercontent.com/37377066/110358882-477f4d00-8056-11eb-80ce-b6865222250c.gif)
+<img src="https://user-images.githubusercontent.com/37377066/110358882-477f4d00-8056-11eb-80ce-b6865222250c.gif" width=580 height=600>
